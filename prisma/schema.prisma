@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Penjual {
+  id       Int    @id @default(autoincrement())
+  namaToko String
+  kontak   String
+  toko     Toko?  // One-to-one relation with Toko
+}
+
+model Toko {
+  toko_id        Int     @id @default(autoincrement())
+  lokasi         String
+  jamOperasional String
+  penjual        Penjual @relation(fields: [penjualId], references: [id])
+  penjualId      Int     @unique
+  menus          Menu[] // One-to-many relation with Menu
+}
+
+model Menu {
+  id              Int     @id @default(autoincrement())
+  namaProduk      String
+  kategoriProduk  String
+  harga           Float
+  deskripsiProduk String
+  bestSeller      Boolean
+  tokoId          Int // Foreign key to Toko
+  toko            Toko    @relation(fields: [tokoId], references: [toko_id])
+}
